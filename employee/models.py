@@ -3,6 +3,7 @@ import string
 import random
 from django import forms
 from account.models import User
+from datetime import date
 
 
 #EMPLOYEE REGISTRATION MODULE
@@ -22,8 +23,7 @@ class Employee(models.Model):
     mother_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=10) 
     adhaar_number = models.CharField(max_length=12, unique=True)
-    user = models.ForeignKey(User, related_name="employee", on_delete=models.CASCADE)
-
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
 #Education Types
 EDUCATION = (
     ('10th class','10TH CLASS'),
@@ -89,8 +89,10 @@ LEAVE_DAY_TYPE = (
 )
 
 class EmployeeLeavesRequests(models.Model):
+    employee = models.ForeignKey(Employee, related_name="employee_leaves", on_delete=models.CASCADE)
     leave_type = models.ForeignKey(LeaveTypeIndex, on_delete=models.CASCADE)
-    leave_date = models.DateField()
+    start_date = models.DateField(default=date.today)
+    end_date = models.DateField(default=date.today)
     leave_day_type = models.CharField(max_length=20, choices=LEAVE_DAY_TYPE, default='Full day')
     reporting_manager_email = models.EmailField(max_length=254)
     reason_for_leave = models.TextField()
